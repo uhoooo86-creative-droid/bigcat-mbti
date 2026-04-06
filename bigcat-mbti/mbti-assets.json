@@ -69,11 +69,14 @@
     "group": "SJ",
     "icon": "📋",
     "label": "루틴형 교사",
-    "memo": "무전기교구, Whisper",
+    "memo": "",
     "audio": {
-      "name": "ISTJ-card.pdf",
-      "path": "./assets/audio/ISTJ-card.pdf"
+      "name": "ISTJ-bgm.mp3",
+      "path": "./assets/audio/ISTJ-bgm.mp3"
     },
-    "material": null
+    "material": {
+      "name": "ISTJ-card.pdf",
+      "path": "./assets/materials/ISTJ-card.pdf"
+    }
   }
 }
