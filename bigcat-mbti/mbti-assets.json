@@ -4,7 +4,10 @@
     "icon": "🎯",
     "label": "전략형 교사",
     "memo": "",
-    "audio": { "name": "분석가NT-Next mission(INTJ).mp3", "path": "./assets/audio/분석가NT-Next mission(INTJ).mp3" },
+    "audio": {
+      "name": "분석가NT-Next mission(INTJ).mp3",
+      "path": "./assets/audio/분석가NT-Next mission(INTJ).mp3"
+    },
     "material": null
   },
   "INTP": {
@@ -12,7 +15,10 @@
     "icon": "🔍",
     "label": "탐구형 교사",
     "memo": "",
-    "audio": { "name": "분석가NT-Why vs Because(INTP).mp3", "path": "./assets/audio/분석가NT-Why vs Because(INTP).mp3" },
+    "audio": {
+      "name": "분석가NT-Why vs Because(INTP).mp3",
+      "path": "./assets/audio/분석가NT-Why vs Because(INTP).mp3"
+    },
     "material": null
   },
   "ENTJ": {
@@ -20,7 +26,10 @@
     "icon": "🏆",
     "label": "리더형 교사",
     "memo": "",
-    "audio": { "name": "분석가NT-Question mark(ENTJ).mp3", "path": "./assets/audio/분석가NT-Question mark(ENTJ).mp3" },
+    "audio": {
+      "name": "분석가NT-Question mark(ENTJ).mp3",
+      "path": "./assets/audio/분석가NT-Question mark(ENTJ).mp3"
+    },
     "material": null
   },
   "ENTP": {
@@ -28,7 +37,10 @@
     "icon": "💡",
     "label": "창의형 교사",
     "memo": "",
-    "audio": { "name": "분석가NT-I'm Little Einstein(ENTP).mp3", "path": "./assets/audio/분석가NT-I'm Little Einstein(ENTP).mp3" },
+    "audio": {
+      "name": "분석가NT-I'm Little Einstein(ENTP).mp3",
+      "path": "./assets/audio/분석가NT-I'm Little Einstein(ENTP).mp3"
+    },
     "material": null
   },
   "INFJ": {
@@ -36,7 +48,10 @@
     "icon": "🌙",
     "label": "공감형 교사",
     "memo": "",
-    "audio": { "name": "외교관NF-Oscar(INFJ).mp3", "path": "./assets/audio/외교관NF-Oscar(INFJ).mp3" },
+    "audio": {
+      "name": "외교관NF-Oscar(INFJ).mp3",
+      "path": "./assets/audio/외교관NF-Oscar(INFJ).mp3"
+    },
     "material": null
   },
   "INFP": {
@@ -44,7 +59,10 @@
     "icon": "🎨",
     "label": "감성형 교사",
     "memo": "",
-    "audio": { "name": "외교관NF-Copy me(INFP).mp3", "path": "./assets/audio/외교관NF-Copy me(INFP).mp3" },
+    "audio": {
+      "name": "외교관NF-Copy me(INFP).mp3",
+      "path": "./assets/audio/외교관NF-Copy me(INFP).mp3"
+    },
     "material": null
   },
   "ENFJ": {
@@ -52,15 +70,24 @@
     "icon": "🤝",
     "label": "리드형 교사",
     "memo": "",
-    "audio": { "name": "외교관NF-Marching together(ENFJ).mp3", "path": "./assets/audio/외교관NF-Marching together(ENFJ).mp3" },
-    "material": null
+    "audio": {
+      "name": "외교관NF-Marching together(ENFJ).mp3",
+      "path": "./assets/audio/외교관NF-Marching together(ENFJ).mp3"
+    },
+    "material": {
+      "name": "ENFJ-card.pdf",
+      "path": "./assets/materials/ENFJ-card.pdf"
+    }
   },
   "ENFP": {
     "group": "NF",
     "icon": "🎉",
     "label": "활력형 교사",
     "memo": "",
-    "audio": { "name": "외교관NF-Better than me!(ENFP).mp3", "path": "./assets/audio/외교관NF-Better than me!(ENFP).mp3" },
+    "audio": {
+      "name": "외교관NF-Better than me!(ENFP).mp3",
+      "path": "./assets/audio/외교관NF-Better than me!(ENFP).mp3"
+    },
     "material": null
   },
   "ISTJ": {
@@ -68,7 +95,10 @@
     "icon": "📋",
     "label": "루틴형 교사",
     "memo": "",
-    "audio": { "name": "관리자SJ-Whisper(ISTJ).mp3", "path": "./assets/audio/관리자SJ-Whisper(ISTJ).mp3" },
+    "audio": {
+      "name": "관리자SJ-Whisper(ISTJ).mp3",
+      "path": "./assets/audio/관리자SJ-Whisper(ISTJ).mp3"
+    },
     "material": null
   },
   "ISFJ": {
@@ -76,7 +106,10 @@
     "icon": "🌸",
     "label": "케어형 교사",
     "memo": "",
-    "audio": { "name": "관리자SJ-Gravity(ISFJ).mp3", "path": "./assets/audio/관리자SJ-Gravity(ISFJ).mp3" },
+    "audio": {
+      "name": "관리자SJ-Gravity(ISFJ).mp3",
+      "path": "./assets/audio/관리자SJ-Gravity(ISFJ).mp3"
+    },
     "material": null
   },
   "ESTJ": {
@@ -84,7 +117,10 @@
     "icon": "⚖️",
     "label": "규칙형 교사",
     "memo": "",
-    "audio": { "name": "관리자SJ-Follow the rules(ESTJ).mp3", "path": "./assets/audio/관리자SJ-Follow the rules(ESTJ).mp3" },
+    "audio": {
+      "name": "관리자SJ-Follow the rules(ESTJ).mp3",
+      "path": "./assets/audio/관리자SJ-Follow the rules(ESTJ).mp3"
+    },
     "material": null
   },
   "ESFJ": {
@@ -92,7 +128,10 @@
     "icon": "👏",
     "label": "소통형 교사",
     "memo": "",
-    "audio": { "name": "관리자SJ-Good job(ESFJ).mp3", "path": "./assets/audio/관리자SJ-Good job(ESFJ).mp3" },
+    "audio": {
+      "name": "관리자SJ-Good job(ESFJ).mp3",
+      "path": "./assets/audio/관리자SJ-Good job(ESFJ).mp3"
+    },
     "material": null
   },
   "ISTP": {
@@ -100,7 +139,10 @@
     "icon": "🔧",
     "label": "실습형 교사",
     "memo": "",
-    "audio": { "name": "탐험가SP-Feel and guess(ISTP).mp3", "path": "./assets/audio/탐험가SP-Feel and guess(ISTP).mp3" },
+    "audio": {
+      "name": "탐험가SP-Feel and guess(ISTP).mp3",
+      "path": "./assets/audio/탐험가SP-Feel and guess(ISTP).mp3"
+    },
     "material": null
   },
   "ISFP": {
@@ -108,7 +150,10 @@
     "icon": "🎭",
     "label": "표현형 교사",
     "memo": "",
-    "audio": { "name": "탐험가SP-Feel and move(ISFP).mp3", "path": "./assets/audio/탐험가SP-Feel and move(ISFP).mp3" },
+    "audio": {
+      "name": "탐험가SP-Feel and move(ISFP).mp3",
+      "path": "./assets/audio/탐험가SP-Feel and move(ISFP).mp3"
+    },
     "material": null
   },
   "ESTP": {
@@ -116,7 +161,10 @@
     "icon": "⚡",
     "label": "액션형 교사",
     "memo": "",
-    "audio": { "name": "탐험가SP-Go Go Friend(ESTP).mp3", "path": "./assets/audio/탐험가SP-Go Go Friend(ESTP).mp3" },
+    "audio": {
+      "name": "탐험가SP-Go Go Friend(ESTP).mp3",
+      "path": "./assets/audio/탐험가SP-Go Go Friend(ESTP).mp3"
+    },
     "material": null
   },
   "ESFP": {
@@ -124,7 +172,10 @@
     "icon": "🌟",
     "label": "무대형 교사",
     "memo": "",
-    "audio": { "name": "탐험가SP-Show your moment(ESFP).mp3", "path": "./assets/audio/탐험가SP-Show your moment(ESFP).mp3" },
+    "audio": {
+      "name": "탐험가SP-Show your moment(ESFP).mp3",
+      "path": "./assets/audio/탐험가SP-Show your moment(ESFP).mp3"
+    },
     "material": null
   }
 }
