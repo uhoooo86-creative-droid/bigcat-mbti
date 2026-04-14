@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>BeatCat MBTI</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;background:#1A1A2A;font-family:'Nunito',sans-serif;color:#fff;touch-action:manipulation;}
+button{cursor:pointer;font-family:'Nunito',sans-serif;border:none;outline:none;background:none;}
+#app{display:flex;flex-direction:column;height:100%;max-width:430px;margin:0 auto;position:relative;}
+
+/* ── 배경 그라디언트 (그룹별) ── */
+#bg{position:fixed;inset:0;z-index:0;transition:background 0.5s ease;max-width:430px;margin:0 auto;}
+#bg.NT{background:linear-gradient(160deg,#3A0A08 0%,#1A1A2A 55%);}
+#bg.NF{background:linear-gradient(160deg,#2D1A00 0%,#1A1A2A 55%);}
+#bg.SJ{background:linear-gradient(160deg,#061A2D 0%,#1A1A2A 55%);}
+#bg.SP{background:linear-gradient(160deg,#061D0E 0%,#1A1A2A 55%);}
+
+#app{position:relative;z-index:1;}
+
+/* ── 헤더 ── */
+#header{padding:18px 20px 10px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.hd-logo{font-size:18px;font-weight:900;letter-spacing:-.01em;}
+.hd-logo span{color:#E8584C;}
+.hd-badge{font-size:10px;font-weight:900;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);letter-spacing:.05em;}
+
+/* ── 그룹 탭 ── */
+#group-tabs{display:flex;gap:6px;padding:0 16px 12px;flex-shrink:0;overflow-x:auto;scrollbar-width:none;}
+#group-tabs::-webkit-scrollbar{display:none;}
+.gtab{flex-shrink:0;padding:7px 16px;border-radius:20px;font-size:12px;font-weight:800;background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);border:1.5px solid rgba(255,255,255,.1);transition:all .2s;white-space:nowrap;}
+.gtab.on.NT{background:#E8584C;color:#fff;border-color:#E8584C;box-shadow:0 4px 16px rgba(232,88,76,.4);}
+.gtab.on.NF{background:#F5A623;color:#fff;border-color:#F5A623;box-shadow:0 4px 16px rgba(245,166,35,.4);}
+.gtab.on.SJ{background:#4A90D9;color:#fff;border-color:#4A90D9;box-shadow:0 4px 16px rgba(74,144,217,.4);}
+.gtab.on.SP{background:#5BAD6F;color:#fff;border-color:#5BAD6F;box-shadow:0 4px 16px rgba(91,173,111,.4);}
+
+/* ── 앨범 아트 영역 ── */
+#album-area{flex-shrink:0;padding:0 24px;margin-bottom:14px;}
+.album-art{
+  width:100%;aspect-ratio:1.6;border-radius:18px;
+  display:flex;align-items:flex-end;
+  position:relative;overflow:hidden;
+  box-shadow:0 16px 48px rgba(0,0,0,.45);
+  transition:background .4s;
+}
+.album-art.NT{background:linear-gradient(135deg,#E8584C,#F0844A);}
+.album-art.NF{background:linear-gradient(135deg,#F5A623,#E85E4C);}
+.album-art.SJ{background:linear-gradient(135deg,#4A90D9,#6A6DD9);}
+.album-art.SP{background:linear-gradient(135deg,#5BAD6F,#3DBFB0);}
+.album-art::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 25% 25%,rgba(255,255,255,.18),transparent 60%);}
+.album-type{font-size:26px;font-weight:900;color:#fff;letter-spacing:.1em;line-height:1;text-shadow:0 3px 10px rgba(0,0,0,.3);}
+.album-label{font-size:11px;color:rgba(255,255,255,.75);font-weight:800;margin-top:3px;}
+
+/* 미리보기 이미지 */
+.album-preview{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:18px;z-index:4;}
+
+/* ── 트랙 정보 ── */
+#track-info{padding:0 24px;margin-bottom:18px;flex-shrink:0;}
+.track-top{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.track-type-badge{font-size:11px;font-weight:900;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.12);color:rgba(255,255,255,.6);letter-spacing:.04em;white-space:nowrap;flex-shrink:0;}
+.track-group{font-size:11px;font-weight:800;color:rgba(255,255,255,.35);letter-spacing:.06em;}
+.track-title{font-size:28px;font-weight:900;color:#fff;line-height:1.15;margin-bottom:5px;letter-spacing:-.02em;}
+.track-filename{font-size:11px;color:rgba(255,255,255,.4);font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+/* ── 유형 선택 칩 ── */
+#type-bar{display:flex;gap:7px;padding:0 16px;margin-bottom:16px;flex-shrink:0;overflow-x:auto;scrollbar-width:none;}
+#type-bar::-webkit-scrollbar{display:none;}
+.tpill{flex-shrink:0;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:800;background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);border:1.5px solid rgba(255,255,255,.1);transition:all .18s;}
+.tpill.on{color:#fff;border-color:transparent;}
+.tpill.on.NT{background:#E8584C;box-shadow:0 3px 12px rgba(232,88,76,.4);}
+.tpill.on.NF{background:#F5A623;box-shadow:0 3px 12px rgba(245,166,35,.4);}
+.tpill.on.SJ{background:#4A90D9;box-shadow:0 3px 12px rgba(74,144,217,.4);}
+.tpill.on.SP{background:#5BAD6F;box-shadow:0 3px 12px rgba(91,173,111,.4);}
+
+/* ── 플레이어 컨트롤 ── */
+#player{padding:0 24px;flex-shrink:0;margin-bottom:16px;}
+
+/* 진행바 */
+.prog-bar{width:100%;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin-bottom:8px;cursor:pointer;position:relative;}
+.prog-fill{height:100%;border-radius:2px;width:0%;transition:width .2s linear;}
+.NT .prog-fill,.prog-fill.NT{background:#E8584C;}
+.NF .prog-fill,.prog-fill.NF{background:#F5A623;}
+.SJ .prog-fill,.prog-fill.SJ{background:#4A90D9;}
+.SP .prog-fill,.prog-fill.SP{background:#5BAD6F;}
+.prog-time{display:flex;justify-content:space-between;font-size:10px;font-weight:800;color:rgba(255,255,255,.4);margin-bottom:16px;}
+
+/* 재생 버튼 */
+.play-row{display:flex;align-items:center;justify-content:center;gap:20px;}
+.nav-skip{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;transition:all .15s;}
+.nav-skip:not([disabled]):active{transform:scale(.88);}
+.nav-skip[disabled]{opacity:.25;}
+.play-btn{
+  width:64px;height:64px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;
+  box-shadow:0 6px 24px rgba(0,0,0,.3);
+  transition:all .18s;flex-shrink:0;
+}
+.play-btn:active{transform:scale(.92);}
+.NT .play-btn{background:#E8584C;}
+.NF .play-btn{background:#F5A623;}
+.SJ .play-btn{background:#4A90D9;}
+.SP .play-btn{background:#5BAD6F;}
+
+/* 파동 애니메이션 */
+@keyframes ripple{0%{transform:scale(1);opacity:.6;}100%{transform:scale(1.8);opacity:0;}}
+.play-btn.playing::before{content:'';position:absolute;width:64px;height:64px;border-radius:50%;border:2px solid currentColor;animation:ripple 1.2s ease-out infinite;}
+
+/* ── 카드 정보 영역 (스크롤) ── */
+#info-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 16px 20px;}
+#info-scroll::-webkit-scrollbar{width:2px;}
+#info-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:1px;}
+
+.info-card{background:rgba(255,255,255,.07);border-radius:14px;padding:14px 16px;margin-bottom:10px;border:1px solid rgba(255,255,255,.08);}
+.ic-label{font-size:10px;font-weight:900;letter-spacing:.1em;color:rgba(255,255,255,.35);text-transform:uppercase;margin-bottom:7px;}
+.ic-text{font-size:13px;font-weight:700;color:rgba(255,255,255,.85);line-height:1.75;}
+.ic-text.bold{font-size:14px;font-weight:900;color:#fff;}
+
+/* 솔루션 */
+.sol-card{border-radius:14px;padding:14px 16px;margin-bottom:10px;border:1px solid rgba(255,255,255,.12);}
+.NT .sol-card{background:rgba(232,88,76,.18);}
+.NF .sol-card{background:rgba(245,166,35,.18);}
+.SJ .sol-card{background:rgba(74,144,217,.18);}
+.SP .sol-card{background:rgba(91,173,111,.18);}
+.sol-text{font-size:14px;font-weight:800;line-height:1.65;}
+.NT .sol-text{color:#FF9E96;}
+.NF .sol-text{color:#FFD080;}
+.SJ .sol-text{color:#90C4FF;}
+.SP .sol-text{color:#90E8A8;}
+
+/* 게임 칩 */
+.game-badge{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:12px;font-weight:900;background:rgba(255,255,255,.12);color:#fff;margin-top:6px;}
+</style>
+</head>
+<body>
+<div id="bg" class="NT"></div>
+<div id="app">
+
+  <!-- 헤더 -->
+  <div id="header">
+    <div class="hd-logo">BeatCat <span>MBTI</span> 🐱</div>
+    <div class="hd-badge" id="hd-badge">NT 전략형</div>
+  </div>
+
+  <!-- 그룹 탭 -->
+  <div id="group-tabs">
+    <button class="gtab on NT" data-g="NT">🔴 NT 전략형</button>
+    <button class="gtab" data-g="NF">🟡 NF 공감형</button>
+    <button class="gtab" data-g="SJ">🔵 SJ 안정형</button>
+    <button class="gtab" data-g="SP">🟢 SP 활동형</button>
+  </div>
+
+  <!-- 앨범 아트 -->
+  <div id="album-area">
+    <div class="album-art NT" id="album-art">
+      <!-- 픽토그램 SVG -->
+      <div id="album-pic" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;z-index:1;"></div>
+      <!-- 하단 유형 정보 -->
+      <div style="position:absolute;bottom:14px;left:16px;right:16px;z-index:3;">
+        <div class="album-type" id="album-type">INTJ</div>
+        <div class="album-label" id="album-label">전략형 교사</div>
+      </div>
+      <img id="preview-img" class="album-preview" src="" alt="" style="display:none;"
+        onload="this.style.display='block';"
+        onerror="this.style.display='none';"/>
+    </div>
+  </div>
+
+  <!-- 트랙 정보 -->
+  <div id="track-info">
+    <div class="track-top">
+      <div class="track-type-badge" id="track-type-badge">INTJ</div>
+      <div class="track-group" id="track-group">NT · 전략형 교사</div>
+    </div>
+    <div class="track-title" id="track-title">Next Mission</div>
+    <div class="track-filename" id="track-type">분析가NT-We are the Champion(INTJ)</div>
+  </div>
+
+  <!-- 유형 칩 -->
+  <div id="type-bar"></div>
+
+  <!-- 플레이어 -->
+  <div id="player" class="NT">
+    <div class="prog-bar" id="prog-bar" onclick="seekAudio(event)">
+      <div class="prog-fill NT" id="prog-fill"></div>
+    </div>
+    <div class="prog-time">
+      <span id="time-cur">0:00</span>
+      <span id="time-tot">0:00</span>
+    </div>
+    <div class="play-row">
+      <button class="nav-skip" id="btn-prev" onclick="prev()">‹‹</button>
+      <button class="play-btn NT" id="play-btn" onclick="togglePlay()">▶</button>
+      <button class="nav-skip" id="btn-next" onclick="nxt()">››</button>
+    </div>
+  </div>
+
+  <!-- 카드 정보 -->
+  <div id="info-scroll">
+    <div id="card-info"></div>
+  </div>
+
+</div>
+
+<script>
+let ASSETS={};
+async function loadAssets(){
+  try{const res=await fetch('./mbti-assets.json');if(res.ok)ASSETS=await res.json();}catch(e){}
+  renderAll();
+}
+
+// ── 16개 픽토그램 SVG 내장 ──
+const PICS={
+  INTJ:`<svg viewBox="0 0 120 100" width="100%" height="100%"><rect x="20" y="28" width="56" height="16" rx="3" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="2"/><rect x="24" y="38" width="56" height="16" rx="3" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.5"/><rect x="28" y="48" width="56" height="16" rx="3" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1"/><line x1="20" y1="36" x2="76" y2="36" stroke="rgba(255,255,255,.5)" stroke-width="1" stroke-dasharray="3,2"/><path d="M88,14 Q98,26 90,40" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="2.5" stroke-linecap="round"/><line x1="90" y1="40" x2="84" y2="52" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round"/><rect x="34" y="62" width="36" height="20" rx="3" fill="rgba(255,255,255,.25)"/><line x1="40" y1="70" x2="64" y2="70" stroke="rgba(255,255,255,.9)" stroke-width="1.5" stroke-linecap="round"/><line x1="40" y1="76" x2="56" y2="76" stroke="rgba(255,255,255,.7)" stroke-width="1.5" stroke-linecap="round"/><ellipse cx="20" cy="44" rx="8" ry="12" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2"/><ellipse cx="100" cy="44" rx="8" ry="12" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2"/><text x="60" y="18" font-size="9" fill="rgba(255,255,255,.85)" font-family="sans-serif" text-anchor="middle" font-weight="700">CHAMPION</text></svg>`,
+  INTP:`<svg viewBox="0 0 120 100" width="100%" height="100%"><circle cx="60" cy="28" r="10" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="2"/><line x1="60" y1="38" x2="60" y2="58" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round"/><line x1="44" y1="46" x2="76" y2="46" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round"/><line x1="60" y1="58" x2="50" y2="74" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round"/><line x1="60" y1="58" x2="70" y2="74" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round"/><circle cx="44" cy="46" r="4" fill="rgba(255,255,255,.8)"/><circle cx="60" cy="64" r="4" fill="rgba(255,255,255,.6)"/><rect x="6" y="6" width="32" height="18" rx="4" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="1.5"/><text x="22" y="19" font-size="9" fill="rgba(255,255,255,.9)" font-family="sans-serif" text-anchor="middle" font-weight="700">WHY?</text><rect x="82" y="6" width="34" height="18" rx="4" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="1.5"/><text x="99" y="19" font-size="8" fill="rgba(255,255,255,.9)" font-family="sans-serif" text-anchor="middle" font-weight="700">BECAUSE</text><line x1="38" y1="56" x2="82" y2="56" stroke="rgba(255,255,255,.6)" stroke-width="1.5"/><polyline points="44,50 36,56 44,62" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><polyline points="76,50 84,56 76,62" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  ENTJ:`<svg viewBox="0 0 120 100" width="100%" height="100%"><rect x="8" y="18" width="44" height="52" rx="4" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="1.5"/><text x="30" y="56" font-size="34" fill="rgba(255,255,255,.95)" font-family="sans-serif" text-anchor="middle" font-weight="900">?</text><rect x="8" y="18" width="44" height="14" rx="4" fill="rgba(255,255,255,.18)"/><text x="30" y="29" font-size="7" fill="rgba(255,255,255,.8)" font-family="sans-serif" text-anchor="middle" font-weight="700">? 팀</text><rect x="68" y="18" width="44" height="52" rx="4" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="1.5"/><text x="90" y="62" font-size="44" fill="rgba(255,255,255,.95)" font-family="sans-serif" text-anchor="middle" font-weight="900">.</text><rect x="68" y="18" width="44" height="14" rx="4" fill="rgba(255,255,255,.18)"/><text x="90" y="29" font-size="7" fill="rgba(255,255,255,.8)" font-family="sans-serif" text-anchor="middle" font-weight="700">· 팀</text><rect x="50" y="38" width="20" height="16" rx="8" fill="rgba(255,255,255,.15)"/><text x="60" y="50" font-size="8" fill="rgba(255,255,255,.9)" font-family="sans-serif" text-anchor="middle" font-weight="900">VS</text></svg>`,
+  ENTP:`<svg viewBox="0 0 120 100" width="100%" height="100%"><ellipse cx="14" cy="86" rx="5" ry="7" fill="rgba(255,255,255,.2)" transform="rotate(-15,14,86)"/><ellipse cx="28" cy="90" rx="5" ry="7" fill="rgba(255,255,255,.35)" transform="rotate(15,28,90)"/><ellipse cx="42" cy="86" rx="5" ry="7" fill="rgba(255,255,255,.5)" transform="rotate(-15,42,86)"/><ellipse cx="56" cy="90" rx="5" ry="7" fill="rgba(255,255,255,.65)" transform="rotate(15,56,90)"/><ellipse cx="70" cy="86" rx="5" ry="7" fill="rgba(255,255,255,.85)" transform="rotate(-15,70,86)"/><circle cx="76" cy="44" r="10" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="2"/><line x1="76" y1="54" x2="76" y2="70" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round"/><line x1="64" y1="60" x2="88" y2="60" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round"/><line x1="76" y1="70" x2="68" y2="82" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round"/><line x1="76" y1="70" x2="84" y2="82" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round"/><rect x="8" y="12" width="54" height="16" rx="4" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="1.5"/><text x="35" y="24" font-size="7.5" fill="rgba(255,255,255,.9)" font-family="sans-serif" text-anchor="middle" font-weight="700">아인슈타인!</text><rect x="90" y="18" width="12" height="34" rx="4" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.5"/><circle cx="96" cy="26" r="3" fill="rgba(255,255,255,.3)"/><circle cx="96" cy="35" r="3" fill="rgba(255,255,255,.9)"/><circle cx="96" cy="44" r="3" fill="rgba(255,255,255,.3)"/></svg>`,
+  INFJ:`<svg viewBox="0 0 120 100" width="100%" height="100%"><path d="M60,8 L20,80 L100,80 Z" fill="rgba(255,255,255,.07)"/><circle cx="60" cy="8" r="7" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="1.5"/><circle cx="60" cy="44" r="12" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="2"/><line x1="60" y1="56" x2="60" y2="72" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round"/><line x1="46" y1="62" x2="74" y2="62" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round"/><line x1="60" y1="72" x2="52" y2="86" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round"/><line x1="60" y1="72" x2="68" y2="86" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round"/><polygon points="22,28 25,20 32,20 26,15 29,7 22,12 15,7 18,15 12,20 19,20" fill="rgba(255,255,255,.7)"/><polygon points="98,28 101,20 108,20 102,15 105,7 98,12 91,7 94,15 88,20 95,20" fill="rgba(255,255,255,.7)"/><text x="60" y="96" font-size="7" fill="rgba(255,255,255,.7)" font-family="sans-serif" text-anchor="middle" font-weight="700" letter-spacing="1">OSCAR</text></svg>`,
+  INFP:`<svg viewBox="0 0 120 100" width="100%" height="100%"><circle cx="32" cy="46" r="22" fill="rgba(255,255,255,.1)" stroke="rgba(255,255,255,.8)" stroke-width="2"/><ellipse cx="24" cy="42" rx="4" ry="5" fill="rgba(255,255,255,.85)"/><ellipse cx="40" cy="42" rx="4" ry="5" fill="rgba(255,255,255,.85)"/><circle cx="20" cy="48" r="4" fill="rgba(255,200,180,.5)"/><circle cx="44" cy="48" r="4" fill="rgba(255,200,180,.5)"/><path d="M24,56 Q32,63 40,56" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="1.5" stroke-linecap="round"/><rect x="58" y="8" width="52" height="18" rx="4" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="1.5"/><text x="84" y="21" font-size="8" fill="rgba(255,255,255,.9)" font-family="sans-serif" text-anchor="middle" font-weight="700">FOLLOW ME!</text><circle cx="72" cy="46" r="8" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.5"/><text x="72" y="50" font-size="9" font-family="sans-serif" text-anchor="middle">🐶</text><circle cx="90" cy="54" r="7" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.2"/><text x="90" y="58" font-size="8" font-family="sans-serif" text-anchor="middle">🐱</text><circle cx="106" cy="60" r="6" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="1"/><text x="106" y="64" font-size="7" font-family="sans-serif" text-anchor="middle">🐻</text><ellipse cx="52" cy="80" rx="4" ry="6" fill="rgba(255,255,255,.35)" transform="rotate(-10,52,80)"/><ellipse cx="64" cy="86" rx="4" ry="6" fill="rgba(255,255,255,.55)" transform="rotate(10,64,86)"/><ellipse cx="76" cy="80" rx="4" ry="6" fill="rgba(255,255,255,.35)" transform="rotate(-10,76,80)"/></svg>`,
+  ENFJ:`<svg viewBox="0 0 120 100" width="100%" height="100%"><circle cx="40" cy="18" r="9" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="2"/><circle cx="80" cy="18" r="9" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="2"/><line x1="40" y1="27" x2="40" y2="44" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round"/><line x1="80" y1="27" x2="80" y2="44" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round"/><line x1="26" y1="34" x2="54" y2="34" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round"/><line x1="66" y1="34" x2="94" y2="34" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round"/><line x1="40" y1="44" x2="48" y2="62" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round"/><line x1="80" y1="44" x2="72" y2="62" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round"/><rect x="46" y="59" width="28" height="9" rx="3" fill="rgba(255,255,255,.3)"/><line x1="44" y1="63" x2="76" y2="63" stroke="rgba(255,255,255,.95)" stroke-width="4" stroke-linecap="round"/><line x1="40" y1="44" x2="28" y2="72" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round"/><line x1="80" y1="44" x2="92" y2="72" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round"/><ellipse cx="38" cy="82" rx="5" ry="7" fill="rgba(255,255,255,.4)" transform="rotate(-10,38,82)"/><ellipse cx="52" cy="88" rx="5" ry="7" fill="rgba(255,255,255,.55)" transform="rotate(10,52,88)"/><ellipse cx="66" cy="82" rx="5" ry="7" fill="rgba(255,255,255,.4)" transform="rotate(-10,66,82)"/><ellipse cx="80" cy="88" rx="5" ry="7" fill="rgba(255,255,255,.55)" transform="rotate(10,80,88)"/></svg>`,
+  ENFP:`<svg viewBox="0 0 120 100" width="100%" height="100%"><path d="M42,6 Q46,0 52,2 L68,2 Q74,0 78,6 L82,38 Q82,48 60,48 Q38,48 38,38 Z" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="1.5"/><text x="60" y="28" font-size="7" fill="rgba(255,255,255,.8)" font-family="sans-serif" text-anchor="middle" font-weight="700">새우깡</text><ellipse cx="20" cy="64" rx="14" ry="10" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.5"/><text x="20" y="68" font-size="9" fill="rgba(255,255,255,.8)" font-family="sans-serif" text-anchor="middle">I</text><ellipse cx="56" cy="70" rx="20" ry="14" fill="none" stroke="rgba(255,255,255,.75)" stroke-width="1.8"/><text x="56" y="75" font-size="11" fill="rgba(255,255,255,.9)" font-family="sans-serif" text-anchor="middle" font-weight="700">You</text><ellipse cx="96" cy="76" rx="24" ry="17" fill="rgba(255,255,255,.1)" stroke="rgba(255,255,255,.9)" stroke-width="2"/><text x="96" y="82" font-size="13" fill="rgba(255,255,255,.95)" font-family="sans-serif" text-anchor="middle" font-weight="900">WE!</text></svg>`,
+  ISTJ:`<svg viewBox="0 0 120 100" width="100%" height="100%"><path d="M60,6 L38,44 L82,44 Z" fill="rgba(255,255,255,.12)" stroke="rgba(255,255,255,.8)" stroke-width="2" stroke-linejoin="round"/><ellipse cx="60" cy="44" rx="28" ry="9" fill="rgba(255,255,255,.1)" stroke="rgba(255,255,255,.7)" stroke-width="1.5"/><polygon points="60,18 63,26 71,26 65,32 67,40 60,35 53,40 55,32 49,26 57,26" fill="rgba(255,220,50,.85)"/><circle cx="22" cy="62" r="8" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2"/><path d="M14,68 Q18,74 26,70" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.5" stroke-linecap="round"/><line x1="30" y1="62" x2="46" y2="60" stroke="rgba(255,255,255,.5)" stroke-width="1.5" stroke-dasharray="2,2"/><circle cx="56" cy="62" r="8" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2"/><path d="M62,60 Q68,60 68,66 Q68,72 62,72" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.5" stroke-linecap="round"/><line x1="68" y1="62" x2="82" y2="60" stroke="rgba(255,255,255,.5)" stroke-width="1.5" stroke-dasharray="2,2"/><circle cx="94" cy="62" r="10" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2"/><line x1="94" y1="52" x2="98" y2="44" stroke="rgba(255,255,255,.7)" stroke-width="1.5" stroke-linecap="round"/><circle cx="100" cy="42" r="3" fill="rgba(255,220,50,.9)"/><text x="94" y="68" font-size="11" fill="rgba(255,255,255,.9)" font-family="sans-serif" text-anchor="middle">💣</text></svg>`,
+  ISFJ:`<svg viewBox="0 0 120 100" width="100%" height="100%"><circle cx="60" cy="54" r="36" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="1" stroke-dasharray="4,3"/><circle cx="60" cy="18" r="8" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2"/><circle cx="96" cy="54" r="8" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2"/><circle cx="60" cy="90" r="8" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2"/><circle cx="24" cy="54" r="8" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2"/><line x1="66" y1="22" x2="90" y2="46" stroke="rgba(255,255,255,.65)" stroke-width="1.5" stroke-linecap="round"/><line x1="90" y1="62" x2="66" y2="82" stroke="rgba(255,255,255,.65)" stroke-width="1.5" stroke-linecap="round"/><line x1="54" y1="82" x2="30" y2="62" stroke="rgba(255,255,255,.65)" stroke-width="1.5" stroke-linecap="round"/><line x1="30" y1="46" x2="54" y2="22" stroke="rgba(255,255,255,.65)" stroke-width="1.5" stroke-linecap="round"/><rect x="34" y="40" width="52" height="28" rx="14" fill="rgba(255,255,255,.12)" stroke="rgba(255,255,255,.85)" stroke-width="1.5"/><text x="60" y="52" font-size="8" fill="rgba(255,255,255,.95)" font-family="sans-serif" text-anchor="middle" font-weight="700">무중력!</text><text x="60" y="63" font-size="6.5" fill="rgba(255,255,255,.7)" font-family="sans-serif" text-anchor="middle">ZERO GRAVITY</text></svg>`,
+  ESTJ:`<svg viewBox="0 0 120 100" width="100%" height="100%"><text x="60" y="12" font-size="8" fill="rgba(255,255,255,.8)" font-family="sans-serif" text-anchor="middle" font-weight="700">CLEAN UP!</text><circle cx="24" cy="26" r="8" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2"/><line x1="24" y1="34" x2="24" y2="50" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/><line x1="14" y1="40" x2="34" y2="40" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/><line x1="24" y1="50" x2="18" y2="64" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/><line x1="24" y1="50" x2="30" y2="64" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/><circle cx="60" cy="24" r="8" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2"/><line x1="60" y1="32" x2="60" y2="48" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/><line x1="50" y1="38" x2="70" y2="38" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/><line x1="60" y1="48" x2="54" y2="62" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/><line x1="60" y1="48" x2="66" y2="62" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/><circle cx="96" cy="26" r="8" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2"/><line x1="96" y1="34" x2="96" y2="50" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/><line x1="86" y1="40" x2="106" y2="40" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/><line x1="96" y1="50" x2="90" y2="64" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/><line x1="96" y1="50" x2="102" y2="64" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/><rect x="10" y="72" width="20" height="22" rx="3" fill="none" stroke="rgba(255,255,255,.65)" stroke-width="1.5"/><rect x="34" y="72" width="20" height="22" rx="3" fill="none" stroke="rgba(255,255,255,.65)" stroke-width="1.5"/><rect x="58" y="72" width="20" height="22" rx="3" fill="none" stroke="rgba(255,255,255,.65)" stroke-width="1.5"/><rect x="82" y="72" width="20" height="22" rx="3" fill="rgba(255,255,255,.2)" stroke="rgba(255,255,255,.45)" stroke-width="1" stroke-dasharray="2,2"/></svg>`,
+  ESFJ:`<svg viewBox="0 0 120 100" width="100%" height="100%"><text x="18" y="36" font-size="14" fill="rgba(255,255,255,.45)" font-family="sans-serif" text-anchor="middle" font-weight="900">O</text><text x="40" y="26" font-size="16" fill="rgba(255,255,255,.62)" font-family="sans-serif" text-anchor="middle" font-weight="900">O</text><text x="65" y="16" font-size="18" fill="rgba(255,255,255,.8)" font-family="sans-serif" text-anchor="middle" font-weight="900">O</text><text x="93" y="8" font-size="20" fill="rgba(255,255,255,.95)" font-family="sans-serif" text-anchor="middle" font-weight="900">O</text><path d="M44,66 Q52,60 56,68 L68,68 Q72,68 72,74 Q72,78 68,78 L52,78 Q44,78 44,70 Z" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M56,68 L56,54 Q56,48 60,48 Q64,48 64,54 L64,68" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/><path d="M64,66 L64,52 Q64,46 68,46 Q72,46 72,52 L72,66" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/><path d="M72,64 L72,54 Q72,48 76,48 Q80,48 80,54 L80,64" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/><line x1="38" y1="62" x2="30" y2="54" stroke="rgba(255,255,255,.4)" stroke-width="1.5" stroke-linecap="round"/><line x1="84" y1="62" x2="92" y2="54" stroke="rgba(255,255,255,.4)" stroke-width="1.5" stroke-linecap="round"/><rect x="30" y="84" width="60" height="14" rx="7" fill="rgba(255,255,255,.15)" stroke="rgba(255,255,255,.8)" stroke-width="1.5"/><text x="60" y="95" font-size="8" fill="rgba(255,255,255,.95)" font-family="sans-serif" text-anchor="middle" font-weight="900">GOOD JOB!</text></svg>`,
+  ISTP:`<svg viewBox="0 0 120 100" width="100%" height="100%"><rect x="14" y="8" width="72" height="52" rx="6" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.8)" stroke-width="2"/><circle cx="28" cy="24" r="3" fill="rgba(255,255,255,.2)"/><circle cx="46" cy="18" r="4" fill="rgba(255,255,255,.15)"/><circle cx="62" cy="26" r="3" fill="rgba(255,255,255,.2)"/><circle cx="74" cy="20" r="2.5" fill="rgba(255,255,255,.15)"/><text x="50" y="46" font-size="22" fill="rgba(255,255,255,.85)" font-family="sans-serif" text-anchor="middle" font-weight="900">A</text><line x1="84" y1="6" x2="64" y2="28" stroke="rgba(255,255,255,.9)" stroke-width="2.5" stroke-linecap="round"/><polygon points="84,6 94,10 82,18" fill="rgba(255,255,255,.8)"/><path d="M26,72 Q18,72 18,62 L18,40 Q18,34 24,34 Q30,34 30,40 L30,30 Q30,24 36,24 Q42,24 42,30 L42,28 Q42,22 48,22 Q54,22 54,28 L54,32 Q54,26 60,26 Q66,26 66,32 L66,52 Q66,64 54,68 Q44,72 34,70 Z" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><text x="42" y="58" font-size="10" fill="rgba(255,255,255,.9)" font-family="sans-serif" text-anchor="middle" font-weight="700">cat</text><text x="86" y="70" font-size="18" fill="rgba(255,255,255,.8)" font-family="sans-serif" font-weight="700">?</text></svg>`,
+  ISFP:`<svg viewBox="0 0 120 100" width="100%" height="100%"><path d="M4,44 Q18,20 32,44 Q46,68 60,44 Q74,20 88,44 Q102,68 116,44" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="3" stroke-linecap="round"/><circle cx="18" cy="32" r="5" fill="rgba(255,220,50,.85)"/><circle cx="60" cy="32" r="5" fill="rgba(100,160,255,.85)"/><circle cx="102" cy="32" r="5" fill="rgba(255,120,100,.85)"/><circle cx="32" cy="34" r="9" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2"/><line x1="32" y1="43" x2="32" y2="57" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/><line x1="22" y1="49" x2="42" y2="49" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/><line x1="32" y1="57" x2="26" y2="69" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/><line x1="32" y1="57" x2="38" y2="69" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/><ellipse cx="54" cy="80" rx="5" ry="7" fill="rgba(255,255,255,.35)" transform="rotate(-15,54,80)"/><ellipse cx="68" cy="74" rx="5" ry="7" fill="rgba(255,255,255,.55)" transform="rotate(15,68,74)"/><ellipse cx="82" cy="80" rx="5" ry="7" fill="rgba(255,255,255,.35)" transform="rotate(-15,82,80)"/><ellipse cx="96" cy="74" rx="5" ry="7" fill="rgba(255,255,255,.55)" transform="rotate(15,96,74)"/></svg>`,
+  ESTP:`<svg viewBox="0 0 120 100" width="100%" height="100%"><ellipse cx="60" cy="62" rx="48" ry="24" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="1" stroke-dasharray="4,3"/><line x1="12" y1="62" x2="12" y2="34" stroke="rgba(255,255,255,.8)" stroke-width="2"/><text x="12" y="30" font-size="7" fill="rgba(255,255,255,.8)" font-family="sans-serif" text-anchor="middle" font-weight="700">START</text><circle cx="50" cy="34" r="10" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="2"/><line x1="50" y1="44" x2="54" y2="58" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round"/><line x1="36" y1="50" x2="58" y2="46" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round"/><line x1="54" y1="58" x2="44" y2="72" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round"/><line x1="54" y1="58" x2="64" y2="70" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round"/><circle cx="90" cy="36" r="10" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2"/><line x1="90" y1="46" x2="90" y2="60" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/><line x1="76" y1="42" x2="84" y2="52" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/><line x1="104" y1="42" x2="96" y2="52" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/><line x1="90" y1="60" x2="84" y2="74" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/><line x1="90" y1="60" x2="96" y2="74" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/><polygon points="90,20 92,14 98,14 93,10 95,4 90,8 85,4 87,10 82,14 88,14" fill="rgba(255,255,255,.8)"/><text x="50" y="22" font-size="8" fill="rgba(255,255,255,.8)" font-family="sans-serif" text-anchor="middle" font-weight="900">GO GO!</text></svg>`,
+  ESFP:`<svg viewBox="0 0 120 100" width="100%" height="100%"><circle cx="30" cy="58" r="18" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2"/><path d="M30,40 L24,50 L30,58 L36,50 Z" fill="rgba(255,255,255,.3)"/><rect x="18" y="18" width="30" height="14" rx="4" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="1.5"/><text x="33" y="29" font-size="8" fill="rgba(255,255,255,.9)" font-family="sans-serif" text-anchor="middle" font-weight="700">word!</text><path d="M30,40 Q42,10 48,20" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.5" stroke-dasharray="3,2" stroke-linecap="round"/><line x1="66" y1="18" x2="66" y2="82" stroke="rgba(255,255,255,.85)" stroke-width="2.5" stroke-linecap="round"/><line x1="66" y1="18" x2="104" y2="18" stroke="rgba(255,255,255,.85)" stroke-width="2.5" stroke-linecap="round"/><line x1="104" y1="18" x2="104" y2="82" stroke="rgba(255,255,255,.85)" stroke-width="2.5" stroke-linecap="round"/><text x="85" y="56" font-size="9" fill="rgba(255,255,255,.9)" font-family="sans-serif" text-anchor="middle" font-weight="900">GOAL!</text><circle cx="85" cy="72" r="10" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.5"/><line x1="85" y1="62" x2="85" y2="82" stroke="rgba(255,255,255,.6)" stroke-width="1"/><line x1="75" y1="72" x2="95" y2="72" stroke="rgba(255,255,255,.6)" stroke-width="1"/><line x1="85" y1="72" x2="93" y2="66" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/><circle cx="85" cy="72" r="2.5" fill="rgba(255,255,255,.9)"/><polygon points="10,24 12,18 18,18 13,14 15,8 10,12 5,8 7,14 2,18 8,18" fill="rgba(255,255,255,.7)"/></svg>`,
+};
+
+const D={
+  NT:{label:'NT 전략형',emoji:'🔴',
+    types:{
+      INTJ:{icon:'🎯',label:'전략형 교사',trait:'구조와 계획으로 수업을 설계하는 전략형 교사',solution:'"좋아, 이건 미션이야— Step 1부터 하나씩 깨보자!"',gt:'게임',gi:'🎮',game:'We are the Champion',tip:'UFC 챔피언처럼 단계별 격파 후 단어 카드 꺼내기!\n🎵 Eyes of Tiger BGM\n📎 [출력] Champion Belt · [구매] Glove'},
+      INTP:{icon:'🔍',label:'탐구형 교사',trait:'질문과 탐구로 수업을 확장하는 사고형 교사',solution:'"왜 그럴까? 우리 같이 이유를 찾아보자!"',gt:'게임',gi:'🎮',game:'Why vs Because',tip:'신체 부위로 질문↔대답! Why 팀이 몸으로 질문, Because 팀이 대답.\n🎵 We can do it_빅캣\n📎 [출력] Body part cards'},
+      ENTJ:{icon:'🏆',label:'리더형 교사',trait:'목표와 결과 중심으로 수업을 이끄는 리더형 교사',solution:'"마침표·물음표 역할 팀경기 미션— 이긴 팀이 보너스 포인트!"',gt:'게임',gi:'🎮',game:'Question Mark',tip:'문장 속 마침표(·)·물음표(?) 모양을 몸으로 만들기!\n🎵 Question Mark_빅캣\n📎 [출력] Question Mark · Operations Point card'},
+      ENTP:{icon:'💡',label:'창의형 교사',trait:'아이디어와 변화를 즐기는 즉흥 창의형 교사',solution:'"노란불! Wait~ I have an Idea!"',gt:'게임',gi:'🎮',game:"I am little Einstein",tip:'"아인슈타인!" 외치며 5걸음 이동 → 가장 멀리 간 친구 단어로 교체 → 무한반복!\n🎵 I am little Einstein_빅캣\n📎 [출력] Lyrics · [구매] Light'},
+    }},
+  NF:{label:'NF 공감형',emoji:'🟡',
+    types:{
+      INFJ:{icon:'🌙',label:'공감형 교사',trait:'감정과 스토리로 몰입을 만드는 공감형 교사',solution:'"지금부터 우리가 주인공이야— 이 문제를 함께 해결해보자"',gt:'역할',gi:'🎭',game:'Oscar',tip:'레드카펫의 주인공 되기! 학생이 영화 속 캐릭터가 되어 영어로 대화.\n🎵 시상식 BGM\n📎 [출력] Champion Belt · [구매] Glove'},
+      INFP:{icon:'🎨',label:'감성형 교사',trait:'감정 표현과 창작을 이끌어내는 감성형 교사',solution:'"이걸 너만의 방식으로 표현해볼래?"',gt:'크리에이티브',gi:'✏️',game:'Follow Me',tip:'커비가 삼킨 동물 되어보기! 유아들이 직접 단어 관련 모션을 만들어 보여주기.\n🎵 Follow me_빅캣\n📎 [출력] Kirby cards'},
+      ENFJ:{icon:'🤝',label:'리드형 교사',trait:'관계와 참여를 이끌어내는 리드형 교사',solution:'"우리 다 같이 해보자! 서로 도와주면서!"',gt:'게임',gi:'🎮',game:'We are the One!',tip:'2인3각/5인6각 우리는 하나다! 다리를 묶고 함께 이동하며 발화.\n🎵 We are the One BGM\n📎 [출력] Soldiers card'},
+      ENFP:{icon:'🎉',label:'활력형 교사',trait:'에너지와 리액션으로 분위기를 살리는 활력형 교사',solution:'"와 재밌다! 한 번 더! 더 크게 해보자!"',gt:'게임',gi:'🎮',game:'Better Than Me!',tip:'한 글자씩 더 크게·빠르게·더 많이 도전 (새우깡 게임)!\n🎵 Better Than Me_빅캣\n📎 [출력] 새우깡 속 I You They We He She Who What When Where How Why'},
+    }},
+  SJ:{label:'SJ 안정형',emoji:'🔵',
+    types:{
+      ISTJ:{icon:'📋',label:'루틴형 교사',trait:'루틴과 체계로 안정적인 수업을 만드는 교사',solution:'"좋아, 같은 방식으로 한 번 더 반복해보자"',gt:'게임',gi:'🎮',game:'Whisper Game',tip:'해리포터 말하는 모자를 옆 친구에게 씌워주며 단어 속닥이기. 폭탄 터지면 모자 쓴 친구가 단어 말하기!\n🎵 해리포터 BGM\n📎 [출력] Magic book · [구매] Speaking hat'},
+      ISFJ:{icon:'🌸',label:'케어형 교사',trait:'아이를 세심하게 케어하는 따뜻한 교사',solution:'"괜찮아, 천천히 해도 돼— 선생님이 같이 할게"',gt:'게임',gi:'🎮',game:'Gravity or Zero Gravity',tip:'교실에서 함께 강강술래하다가 "무중력!" 외치면 교사 단어카드 버튼 누르기!\n🎵 Follow me_빅캣\n📎 [출력] Kirby cards'},
+      ESTJ:{icon:'⚖️',label:'규칙형 교사',trait:'규칙과 통제로 수업을 정확히 운영하는 교사',solution:'"규칙 기억! 지금은 차례 지켜서 진행한다!"',gt:'게임',gi:'🎮',game:'Clean up',tip:'정리정돈 마칭! 교구 사용 후, 워크북 활동 후 노래에 맞춰 정리.\n🎵 Follow the Rules BGM\n📎 [출력] Soldiers clean up card'},
+      ESFJ:{icon:'👏',label:'소통형 교사',trait:'칭찬과 소통으로 분위기를 만드는 교사',solution:'"와 너무 잘했어! 친구들도 같이 박수!"',gt:'크리에이티브',gi:'✏️',game:'Good Job',tip:'굿잡 0070 — 오,오,오,오 4번 후 굿잡! 문장이나 단어로 확장 가능.\n🎵 Good job_빅캣\n📎 [출력] 새우깡 속 I You They We He She Who What When Where How Why'},
+    }},
+  SP:{label:'SP 활동형',emoji:'🟢',
+    types:{
+      ISTP:{icon:'🔧',label:'실습형 교사',trait:'직접 해보게 만드는 실습 중심 교사',solution:'"말 말고 직접 해보자— 손으로 해보면 바로 알 수 있어"',gt:'게임',gi:'🎮',game:'Feel and Guess',tip:'김서림 유리창 교구 제시 후 짝의 손바닥·등에 알파벳 쓰고 맞추기!\n🎵 Feel and guess_빅캣\n📎 [출력] Window · Glasses'},
+      ISFP:{icon:'🎭',label:'표현형 교사',trait:'감각과 예술로 표현을 이끄는 교사',solution:'"느낌대로 해도 좋아— 자유롭게 만들어봐"',gt:'크리에이티브',gi:'✏️',game:'Feel and Move',tip:'감정의 선을 따라 이동하며 표현하는 감각적 활동!\n🎵 Feel and Move_빅캣\n📎 [출력] Doodle cards'},
+      ESTP:{icon:'⚡',label:'액션형 교사',trait:'빠른 템포와 액션으로 수업을 살리는 교사',solution:'"발화 후 레이스! Go Go Friend!!"',gt:'게임',gi:'🎮',game:'Go Go Friend!',tip:'사자보이즈/데몬헌터스가 되어 발화 후 교실 한 바퀴 마라톤! 구구가가 세레모니 연결.\n🎵 Golden BGM\n📎 [출력] Googoo-gaga card'},
+      ESFP:{icon:'🌟',label:'무대형 교사',trait:'퍼포먼스로 아이를 끌어당기는 무대형 교사',solution:'"좋아! 지금부터 무대야— 멋지게 보여줘!"',gt:'게임',gi:'🎮',game:'Show Your Moment',tip:'풋볼알까기로 축구공의 단어 날린 뒤 읽고 골 세레모니 선택!\n🎵 Better Than Me_빅캣\n📎 [출력] 새우깡 속 I You They We He She Who What When Where How Why'},
+    }},
+};
+
+const GK=['NT','NF','SJ','SP'];
+let cg='NT', ci=0;
+let audioEl=null, isPlaying=false;
+function tkeys(g){return Object.keys(D[g].types);}
+function ct(){return tkeys(cg)[ci];}
+function gcolor(g){return g==='NT'?'#E8584C':g==='NF'?'#F5A623':g==='SJ'?'#4A90D9':'#5BAD6F';}
+
+// ── 그룹 탭 ──
+document.querySelectorAll('#group-tabs .gtab').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    stopAudio();cg=btn.dataset.g;ci=0;
+    document.querySelectorAll('#group-tabs .gtab').forEach(b=>b.classList.remove('on','NT','NF','SJ','SP'));
+    btn.classList.add('on',cg);
+    renderAll();
+  });
+});
+
+// ── 유형 칩 ──
+function renderTypeBar(){
+  const bar=document.getElementById('type-bar');bar.innerHTML='';
+  tkeys(cg).forEach((t,i)=>{
+    const td=D[cg].types[t];
+    const btn=document.createElement('button');
+    btn.className='tpill'+(i===ci?' on '+cg:'');
+    btn.innerHTML=`<span style="margin-right:4px;">${td.icon}</span>${t}`;
+    btn.onclick=()=>{stopAudio();ci=i;renderAll();};
+    bar.appendChild(btn);
+  });
+}
+
+// ── 메인 렌더 ──
+function renderAll(){
+  const g=cg, tk=ct(), td=D[g].types[tk];
+  const asset=ASSETS[tk]||null;
+  const hasAudio=!!(asset&&asset.audio);
+  const audioName=hasAudio?asset.audio.name:'';
+  const trackDisplay=audioName.replace(/\.mp3$/i,'');
+
+  // 배경
+  document.getElementById('bg').className=g;
+
+  // 배지
+  const badge=document.getElementById('hd-badge');
+  badge.textContent=D[g].label;
+
+  // 앨범 아트
+  const art=document.getElementById('album-art');
+  art.className='album-art '+g;
+  document.getElementById('album-type').textContent=tk;
+  document.getElementById('album-label').textContent=td.label;
+
+  // 픽토그램 SVG 내장 표시
+  const picEl=document.getElementById('album-pic');
+  picEl.innerHTML=PICS[tk]||'';
+
+  // 미리보기 이미지 (있으면 픽토그램 위에 덮어씌움)
+  const img=document.getElementById('preview-img');
+  img.style.display='none';
+  img.src=`./assets/previews/${tk}-preview.png`;
+
+  // 트랙 정보
+  document.getElementById('track-type-badge').textContent=tk;
+  document.getElementById('track-group').textContent=`${g} · ${td.label}`;
+  document.getElementById('track-title').textContent=td.game;
+  document.getElementById('track-type').textContent=hasAudio?trackDisplay:'음원 없음';
+
+  // 플레이어 색상
+  document.getElementById('player').className=g;
+  document.getElementById('prog-fill').className='prog-fill '+g;
+  const playBtn=document.getElementById('play-btn');
+  playBtn.className='play-btn '+g+(isPlaying?' playing':'');
+  playBtn.textContent=isPlaying?'⏸':'▶';
+  playBtn.disabled=!hasAudio;
+  if(!hasAudio) playBtn.style.opacity='.35';
+  else playBtn.style.opacity='1';
+
+  // 네비
+  renderTypeBar();
+  renderNavPips();
+
+  // 카드 정보
+  renderCardInfo(g,td);
+
+  // 진행바 초기화
+  if(!isPlaying){
+    document.getElementById('prog-fill').style.width='0%';
+    document.getElementById('time-cur').textContent='0:00';
+    document.getElementById('time-tot').textContent='0:00';
+  }
+}
+
+function renderNavPips(){
+  document.getElementById('btn-prev').disabled=ci===0;
+  document.getElementById('btn-next').disabled=ci===tkeys(cg).length-1;
+}
+
+function renderCardInfo(g,td){
+  const wrap=document.getElementById('card-info');
+  wrap.className=g;
+  // tip을 줄바꿈 기준으로 분리
+  const tipLines=td.tip.split('\n');
+  const tipMain=tipLines[0];
+  const tipBgm=tipLines.find(l=>l.startsWith('🎵'))||'';
+  const tipMat=tipLines.find(l=>l.startsWith('📎'))||'';
+  wrap.innerHTML=`
+    <div class="info-card">
+      <div class="ic-label">🧠 교사 특징</div>
+      <div class="ic-text">${td.trait}</div>
+    </div>
+    <div class="sol-card">
+      <div class="ic-label">💬 솔루션</div>
+      <div class="sol-text">${td.solution}</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">${td.gi} ${td.gt}</div>
+      <div class="ic-text bold">${td.game}</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.6);font-weight:700;margin-top:8px;line-height:1.7;">${tipMain}</div>
+    </div>
+    ${tipBgm||tipMat?`
+    <div class="info-card" style="display:flex;gap:10px;flex-wrap:wrap;">
+      ${tipBgm?`<div style="flex:1;min-width:0;">
+        <div class="ic-label">🎵 음원</div>
+        <div style="font-size:12px;font-weight:800;color:rgba(255,255,255,.8);">${tipBgm.replace('🎵 ','')}</div>
+      </div>`:''}
+      ${tipMat?`<div style="flex:1;min-width:0;">
+        <div class="ic-label">📎 교구</div>
+        <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.7);line-height:1.6;">${tipMat.replace('📎 ','')}</div>
+      </div>`:''}
+    </div>`:''}
+  `;
+}
+
+// ── 오디오 ──
+function stopAudio(){
+  if(audioEl){audioEl.pause();audioEl=null;}
+  isPlaying=false;
+  const pb=document.getElementById('play-btn');
+  if(pb){pb.textContent='▶';pb.classList.remove('playing');}
+  document.getElementById('prog-fill').style.width='0%';
+  document.getElementById('time-cur').textContent='0:00';
+}
+
+function togglePlay(){
+  const asset=ASSETS[ct()]||null;
+  if(!asset||!asset.audio) return;
+  if(isPlaying){stopAudio();return;}
+  if(audioEl) audioEl.pause();
+  audioEl=new Audio(asset.audio.path);
+  audioEl.addEventListener('timeupdate',()=>{
+    if(!audioEl)return;
+    const pct=audioEl.duration?(audioEl.currentTime/audioEl.duration*100):0;
+    document.getElementById('prog-fill').style.width=pct+'%';
+    document.getElementById('time-cur').textContent=fmt(audioEl.currentTime);
+    document.getElementById('time-tot').textContent=fmt(audioEl.duration||0);
+  });
+  audioEl.addEventListener('ended',()=>stopAudio());
+  audioEl.addEventListener('error',()=>{alert('음원 파일을 찾을 수 없습니다.\n경로: '+asset.audio.path);stopAudio();});
+  audioEl.play().then(()=>{
+    isPlaying=true;
+    const pb=document.getElementById('play-btn');
+    pb.textContent='⏸';pb.classList.add('playing');
+  }).catch(e=>{alert('재생 오류: '+e.message);stopAudio();});
+}
+
+function seekAudio(e){
+  if(!audioEl||!audioEl.duration)return;
+  const bar=e.currentTarget;
+  const pct=e.offsetX/bar.offsetWidth;
+  audioEl.currentTime=pct*audioEl.duration;
+}
+
+function fmt(s){
+  if(isNaN(s))return'0:00';
+  const m=Math.floor(s/60),sec=Math.floor(s%60);
+  return`${m}:${sec.toString().padStart(2,'0')}`;
+}
+
+// ── 네비 ──
+function prev(){if(ci>0){stopAudio();ci--;renderAll();}}
+function nxt(){if(ci<tkeys(cg).length-1){stopAudio();ci++;renderAll();}}
+
+// 스와이프
+let _sx=0;
+document.getElementById('info-scroll').addEventListener('touchstart',e=>{_sx=e.touches[0].clientX;},{passive:true});
+document.getElementById('info-scroll').addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-_sx;
+  if(Math.abs(dx)>50){dx<0?nxt():prev();}
+});
+
+// 키보드
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight')nxt();
+  if(e.key==='ArrowLeft')prev();
+  if(e.key===' ')togglePlay();
+});
+
+// 초기화
+loadAssets();
+</script>
+</body>
+</html>
